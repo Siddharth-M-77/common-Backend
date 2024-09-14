@@ -6,12 +6,22 @@ import userRoute from "./routes/user.route.js";
 import cookieParser from "cookie-parser";
 
 dotenv.config({ path: "./.env" });
+
+
 const app = express();
+
 // Middleware to parse JSON request bodies
 app.use(express.json());
+
+
 //Purpose: Parse incoming request bodies (JSON or URL-encoded).
 app.use(express.urlencoded({ extended: true }));
+
+
+app.use(express.static("Public"));
+
 app.use(cors());
+
 app.use(cookieParser());
 
 const PORT = 8000;
