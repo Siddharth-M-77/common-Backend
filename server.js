@@ -33,7 +33,7 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something broke!");
 });
 
-const PORT = process.env.PORT || 8000; // Use environment variable or default to 8000
+const PORT = process.env.PORT || 3000; 
 
 // Connect to the database and start the server
 connectDB()
