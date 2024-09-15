@@ -5,13 +5,12 @@ import {
   userRegistration,
 } from "../controllers/user.controller.js";
 import  upload  from "../middlewares/multer.js";
-import checkUserExistence from "../middlewares/cheakUserExistence.js";
+// import checkUserExistence from "../middlewares/cheakUserExistence.js";
 
 
 const router = express.Router();
 
 router.route("/register").post(
-  checkUserExistence, // Check if user exists before processing uploads
   upload.fields([
     { name: "avatar", maxCount: 1 },
     { name: "coverImage", maxCount: 1 }

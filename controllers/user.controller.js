@@ -1,14 +1,12 @@
 import bcrypt from "bcrypt";
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
-// import asyncHandler from "../utils/asyncHandler.js";
-// import ApiError from "../utils/ApiError.js";
 import uploadOnCloudinary from "../middlewares/cloudinary.js";
-// import ApiResponse from "../utils/ApiResponse.js";
 
 export const userRegistration = async (req, res) => {
   try {
     const { fullName, username, email, password } = req.body;
+    console.log(req.body)
 
     if ([username, email, password].some((field) => field?.trim() === "")) {
       return res.status(400).json({ message: "All fields are required" });
@@ -63,7 +61,10 @@ export const userRegistration = async (req, res) => {
 
     return res
       .status(201)
-      .json(new ApiResponse(201, newUser, "User registered successfully"));
+      .json({
+        message: "User registered successfully",success:true,
+        newUser
+      });
   } catch (error) {
     console.error("Registration Error:", error);
     return res.status(500).json({ message: "An unexpected error occurred" });

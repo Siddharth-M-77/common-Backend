@@ -1,35 +1,44 @@
 import multer from "multer";
 import { User } from "../models/user.model.js";
 
-// Use multer to handle multipart/form-data
-const upload = multer();
+// Configure multer to handle file uploads
+const upload = multer({
+  dest: './Public/temp', // Temporary directory to store files
+});
 
 // Middleware to check if user exists before uploading files
-const checkUserExistence = async (req, res, next) => {
-  try {
-    // `req.body` will now contain the form fields after multer processes the request
-    const { username, email } = req.body
-    console.log(req.body); // Should now log the expected form data
+const checkUserExistence = [
+  // Middleware to handle file uploads
+  upload.fields([
+    { name: "avatar", maxCount: 1 },
+    { name: "coverImage", maxCount: 1 }
+  ]),
+  
+  // Middleware to check user existence
+  async (req, res, next) => {
+    try {
+      const { username, email } = req.body;
 
-    if (!username || !email) {
-      return res
-        .status(400)
-        .json({ message: "Username and email are required" });
+      // Check if username and email are provided
+      if (!username || !email) {
+        return res.status(400).json({ message: "All fields are required." });
+      }
+
+      // Check if user already exists
+      const user = await User.findOne({ $or: [{ username }, { email }] });
+      if (user) {
+        return res.status(409).json({
+          message: "User is already registered with this email or username. Please try another.",
+        });
+      }
+
+      // Proceed to the next middleware if no user is found
+      next();
+      
+    } catch (error) {
+      return res.status(500).json({ message: "Server error occurred." });
     }
-
-    const user = await User.findOne({ $or: [{ username }, { email }] });
-    if (user) {
-      return res.status(409).json({
-        message:
-          "User is already registered with this email or username. Please try another email.",
-      });
-    }
-
-    // If no user is found, continue to the file upload middleware
-    next();
-  } catch (error) {
-    return res.status(500).json({ message: "Server error occurred" });
-  }
-};
+  },
+];
 
 export default checkUserExistence;
