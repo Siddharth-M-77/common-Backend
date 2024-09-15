@@ -1,34 +1,47 @@
 import express from "express";
 import connectDB from "./DB/db.js";
 import cors from "cors";
-import dotenv from "dotenv";
 import userRoute from "./routes/user.route.js";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
 
-dotenv.config({ path: "./.env" });
-
+dotenv.config({}); // Load environment variables
 
 const app = express();
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
-
-//Purpose: Parse incoming request bodies (JSON or URL-encoded).
+// Middleware to parse URL-encoded request bodies
 app.use(express.urlencoded({ extended: true }));
 
-
+// Serve static files from the "Public" directory
 app.use(express.static("Public"));
 
+// Enable Cross-Origin Resource Sharing
 app.use(cors());
 
+// Middleware to parse cookies
 app.use(cookieParser());
 
-const PORT = 8000;
-
+// Route handling
 app.use("/api/v1/user", userRoute);
 
-app.listen(PORT, () => {
-  connectDB();
-  console.log(`server is running on the PORT: ${PORT} !!!`);
+// Basic error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
 });
+
+const PORT = process.env.PORT || 8000; // Use environment variable or default to 8000
+
+// Connect to the database and start the server
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server is running on PORT: ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to the database:", err);
+  });
