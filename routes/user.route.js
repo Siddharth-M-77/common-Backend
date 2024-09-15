@@ -5,7 +5,6 @@ import {
   userRegistration,
 } from "../controllers/user.controller.js";
 import  upload  from "../middlewares/multer.js";
-// import checkUserExistence from "../middlewares/cheakUserExistence.js";
 
 
 const router = express.Router();
